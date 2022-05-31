@@ -1,22 +1,23 @@
 # stereotyped-writing
 # Spring
-笔记涉及大量源码和原理，初学者看起来可能会吃力
+笔记涉及大量源码和原理，初学者看起来可能会吃力   
+为了方便录友学习，我会用一些口语化语言去描述         
 
 内容大概如下：
 * 1. 生命周期
 * 2. 循环依赖
-* 3. IOC和AOP两种实现方式，jdk动态代理和CGLIB的实现加原理加深度源码分析
-* 3. Spring事务 
-* 4. Spring Aware的使用和原理 
-* 5. SpringMVC
-* 6. Spring设计模式
-
-对一些基本概念过一下就好，真正重要的是一些平常没注意的知识点   
-
-**注意：以下关于IOC AOP的实现方式通通用的是SpringBoot的注解方式实现的，配置就用配置类，而不是基于原始的XML的内部bean外部bean等方式**
+* 3. IOC容器和AOP动态代理的两种实现方式，jdk动态代理和CGLIB的实现加原理加深度源码分析
+* 4. 拦截链详解
+* 5. Spring事务 
+* 6. Spring Aware的使用和原理 
+* 7. SpringMVC
+* 8. Spring设计模式
 
 
 
+
+
+首先我们来聊聊Bean的生命周期
 # Spring Bean的生命周期   
 简略图：  
 ![img_2.png](img_2.png)   
@@ -110,12 +111,32 @@ Spring官网默认是jdk动态代理
 在SpringBoot2.x之后，aop默认的动态代理方式是CGLIB
 ![img.png](img.png)    
 如果要修改 SpringBoot 使用 JDK 动态代理，那么在配置文件里设置 spring.aop.proxy-target-class=false    
-至于为什么要换成CGLIB是因为jdk动态代理要求接口，没接口会报错，为了舒服就改成动态代理了，反正功能也没什么影响    
+至于为什么要换成CGLIB Spring的作者说的是因为jdk动态代理要求接口，没接口会报错，为了舒服就改成动态代理了，反正功能也没什么影响    
+
+下面贴上国内大佬对这一修改操作的见解：  
+
+一般 springboot 项目的启动类会加 @SpringBootApplication注解，这个注解本身使用了@EnableAutoConfiguration注解;    
+enable 这个注解使用 @Import(AutoConfigurationImportSelector.class) 导入了对应的 bean；   
+这个bean的process方法中，导入了一堆自动配置类，其中就包括 aop 相关的 AopAutoConfiguration；   
+这个配置类中有两个内部类 JdkDynamicAutoProxyConfiguration 和 CglibAutoProxyConfiguration，他们两个都使用了 @EnableAspectJAutoProxy 注解，Jdk配置类的 proxyTargetClass 属性值就是默认的 false，而Cglib配置类的属性值是 true；   
+又因为 Cglib 配置类的 @ConditionalOnProperty 注解的 matchIfMissing 属性值为 true。   
+所以，如果你使用了 springboot 2.x 版本，且没有配置 “spring.aop.proxy-target-class”值为 false ，则默认注入的是 CglibAutoProxyConfiguration，即默认使用 @EnableAspectJAutoProxy(proxyTargetClass = true)。
+
+从性能出发，
+
+
+
+
 
 
 ### jdk动态代理：  必须实现接口，核心是InvocationHandler接口和Proxy类
 ###### 实现方式
+
+**注意：以下关于AOP的实现方式通通用的是SpringBoot实现的，配置就用配置类，而不是基于原始的XML的内部bean外部bean等方式,所以对源码的分析不存在XMLBeanFactor**
+
+写三个类，分别是接口，要代理的对象，和切面类也就是代理对象
 ```java
+
 //定义接口
 public interface UserService {
     public void addUser(String username,String password);
@@ -123,6 +144,7 @@ public interface UserService {
 
     public void deleteUser(String username);
 }
+
 //定义要代理的对象
 public class UserImpl implements  UserService{
     @Override
@@ -138,13 +160,45 @@ public class UserImpl implements  UserService{
 
 
 // 定义切面类，通过Proxy得到代理类，把所有接口方法的调用转发到InvocationHandler接口的invoke()方法上，然后根据反射调用目标类的方法
+@RestController
+public class MyInvoke implements InvocationHandler {
 
+    //要代理的目标对象
+    private  Object target;
 
+    //自己写个方法通过Proxy得到代理类
+    public Object newProxyInstance(Object target) {
+        //传入目标对象
+        this.target = target;
+        //JDK动态代理只能针对实现了接口的类进行代理，newProxyInstance 函数所需参数就可看出
+        return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(),this);
+    }
 
+    //动态代理的思想就是，不管你让我代理啥，最终都要执行invoke方法，在invoke方法中执行要代理的方法
+    //invoke方法中用的是反射执行被代理的方法
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("jdk动态代理监听"+ method.getName() + "方法");
+        Object invoke = method.invoke(target, args);   //target为被代理的对象，args是方法需要的参数
+        return  invoke;
+    }
 
+    @GetMapping("/testMethod")
+    public void method(){
+        //得到代理类，运行之后才能得到这个代理类
+        UserService userService = (UserService)new MyInvoke().newProxyInstance(new UserImpl());
+        userService.addUser("user","password");
+    }
+}
+}
 ```
+   
+运行结果：    
+![img_6.png](img_6.png)    
 
-**aop的通知配置**   
+
+要在切入点执行的时间附件做点事情的话可以用下面的方法     
+**aop的通知配置，一般叫他为增强逻辑**   
 首先了解切入点表达式  
 ![img_1.png](img_1.png)   
 
@@ -157,10 +211,15 @@ public class UserImpl implements  UserService{
 
 
 ```java
-@Configuration
+@Slf4j
 @Aspect
+@Configuration
 public class SpringAOPConfig{
-    
+
+    //定义切点，名字随便取，方便下面方法使用而已，不然每次都要写切入点表达式
+    @Pointcut("execution(public * springTest.jdkDynamicProxy.controller.*.*(..))")
+    public void MyInvokePointCut() {}
+
     /**
      * @param joinPoint
      * @Before：前置通知
@@ -172,42 +231,44 @@ public class SpringAOPConfig{
     // 方法级别：具体到某个具体的方法
     // @Before(value = "execution(* com.liu.aop.service.impl.*.*(..))")
     // 表示service包下的所有类所有方法都执行该前置通知
-    @Before("execution(* springTest.*.*(..))")
+
+    @Before("MyInvokePointCut()")
     public void before(JoinPoint joinPoint) {
-        System.out.println("方法执行之前执行");
-        System.out.println("正在执行的目标类是: " + joinPoint.getTarget());
-        System.out.println("正在执行的目标方法是: " + joinPoint.getSignature().getName());
+        log.info("方法执行之前执行");
+        log.info("正在执行的目标类是: " + joinPoint.getTarget());
+        log.info("正在执行的目标方法是: " + joinPoint.getSignature().getName());
     }
-    
+
     /**
      * 后置通知，属性参数同上面的前置通知
      * @param joinPoint 前置通知和后置通知独有的参数
      */
-    @After("execution(* springTest..*.*(..))")
+    @After("MyInvokePointCut()")
     public void After(JoinPoint joinPoint) {
-        System.out.println("方法执行之后执行");
-
+        log.info("方法执行之后执行");
     }
-    
+
+
     /**
      * @param proceedingJoinPoint 环绕通知的正在执行中的连接点（这是环绕通知独有的参数）
      * @return 目标方法执行的返回值
      * @Around: 环绕通知，有返回值，环绕通知必须进行放行方法（就相当于拦截器），否则目标方法无法执行
      */
-    @Around(value = "execution(* springTest.*.*(..))")
+    @Around("MyInvokePointCut()")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-
-        System.out.println("Around");
-
+        log.info("AroundBefore");
         //将目标方法的返回值返回，否则调用该目标方法的方法无法获取到返回值
-        return  proceedingJoinPoint.proceed();
+        return proceedingJoinPoint.proceed();
     }
-
 }
 ```
 
-上面的demo代码的操作结果如下：   
 
+demo目录结构：   
+![img_9.png](img_9.png)   
+
+demo代码的操作结果如下：     
+![img_8.png](img_8.png)   
 
 
 ###### 实现原理  
@@ -234,7 +295,6 @@ public class SpringAOPConfig{
 * 1.不能出现private和final，尤其是final，禁止
 * 2.实现了接口默认是用jdk动态代理，当然也可以强制使用CGLIB
 * 3.没实现接口就必须用CGLIB了
-
 
 
 
