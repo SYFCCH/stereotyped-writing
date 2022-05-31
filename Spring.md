@@ -1,16 +1,45 @@
 # stereotyped-writing
-
-这是关于Spring的面试笔记，即是八股文又不是八股文   
+# Spring
 笔记涉及大量源码和原理，初学者看起来可能会吃力
+
+内容大概如下：
+* 1. 生命周期
+* 2. 循环依赖
+* 3. IOC和AOP两种实现方式，jdk动态代理和CGLIB的实现加原理加深度源码分析
+* 3. Spring事务 
+* 4. Spring Aware的使用和原理 
+* 5. SpringMVC
+* 6. Spring设计模式
 
 对一些基本概念过一下就好，真正重要的是一些平常没注意的知识点   
 
 **注意：以下关于IOC AOP的实现方式通通用的是SpringBoot的注解方式实现的，配置就用配置类，而不是基于原始的XML的内部bean外部bean等方式**
 
-# 基础概念的面试题
 
 
-# 面试重点：循环依赖
+# Spring Bean的生命周期   
+简略图：  
+![img_2.png](img_2.png)   
++详细图：
+![img_4.png](img_4.png)  
+
+相同颜色代表相同的一个过程   
+
+
+
+
+2. 
+
+
+3.   
+
+
+
+
+
+
+
+# 循环依赖
 这个知识点被问烂了，必须掌握    
 
 
@@ -177,6 +206,9 @@ public class SpringAOPConfig{
 }
 ```
 
+上面的demo代码的操作结果如下：   
+
+
 
 ###### 实现原理  
 * 1.首先通过实现一个InvocationHandler接口得到一个切面类    
@@ -206,6 +238,23 @@ public class SpringAOPConfig{
 
 
 
-# 面试难点：能说说拦截连的实现吗
+# 面试难点：能说说拦截链的实现吗
 
 
+# Spring Aware机制
+
+
+
+
+# SpringMVC
+
+
+
+# Spring设计模式
+1. 工厂模式   BeanFactory
+2. 模板方法，JdbcTemplate、RestTemplate
+3. 代理模式，AOP
+4. 单例模式，IOC
+5. 责任链模式，拦截链
+6. 观察者模式，Spring里的监听器
+7. 适配者模式，SpringMVC中的HandlerAdapter，我们最常用的就是RequestMappingHandlerAdapter   
