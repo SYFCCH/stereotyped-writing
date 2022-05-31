@@ -122,14 +122,17 @@ enable 这个注解使用 @Import(AutoConfigurationImportSelector.class) 导入�
 又因为 Cglib 配置类的 @ConditionalOnProperty 注解的 matchIfMissing 属性值为 true。   
 所以，如果你使用了 springboot 2.x 版本，且没有配置 “spring.aop.proxy-target-class”值为 false ，则默认注入的是 CglibAutoProxyConfiguration，即默认使用 @EnableAspectJAutoProxy(proxyTargetClass = true)。
 
-从性能出发，
 
-
+jdk动态代理和CGLIB的区别     
+* 1.JDK动态代理是实现了被代理对象的接口，Cglib是继承了被代理对象。    
+* 2.JDK和Cglib都是在运行期生成字节码，JDK是直接写Class字节码，Cglib使用ASM框架写Class字节码，Cglib代理实现更复杂，生成代理类比JDK效率低。   
+* 3.JDK调用代理方法，是通过反射机制调用，Cglib是通过FastClass机制直接调用方法，Cglib执行效率更高。    
 
 
 
 
 ### jdk动态代理：  必须实现接口，核心是InvocationHandler接口和Proxy类
+Jdk动态代理的类必须要实现接口，并且不能是final修饰的类，方法不能是非public的方法，在生成代理类时快，只生成一个代理文件，生成的代理类实现目标类实现的接口，运行时通过反射调用目标类的方法，调用时慢    
 ###### 实现方式
 
 **注意：以下关于AOP的实现方式通通用的是SpringBoot实现的，配置就用配置类，而不是基于原始的XML的内部bean外部bean等方式,所以对源码的分析不存在XMLBeanFactor**
@@ -281,7 +284,11 @@ demo目录结构：
 
 
 
+
+
 ### CGLIB动态代理
+cglib是使用ASM框架来生成代理类，目标类无须实现接口，生成的代理类会继承目标类，不能是final修饰的类，方法不能是非public,由于生成了几个类文件，所以生成时慢，之所以有几个类文件，因为cglib在生成代理类的同时，会为目标类的每个方法都生成一个相应的index,通过index直接定位到方法，直接调用，所以调用时快，在spring中会判断如果有接口就使用jdk代理，如果没有接口就使用cglib代理
+
 ###### 实现方式
 
 
@@ -295,16 +302,17 @@ demo目录结构：
 
 
 ## 动态代理注意事项 
-* 1.不能代理被private和final修饰的**类**，**类**，**类**，重要的事情说三遍，不是方法！！！
-* 2.实现了接口默认是用jdk动态代理，当然也可以强制使用CGLIB
-* 3.没实现接口就必须用CGLIB了
+* 1.不能代理被final修饰的**类**，**类**，**类**，和非public的**方法**,**方法**，**方法**，重要的事情说三遍！  
+* 2.实现了接口默认是用jdk动态代理，当然也可以强制使用CGLIB   
+* 3.没实现接口就必须用CGLIB了  
+ 
 
 
+# 面试难点：能说说拦截链的实现吗      
 
-# 面试难点：能说说拦截链的实现吗   
 
-
-# Spring Aware机制，冲刺大厂的录友可以了解一下
+# Spring Aware机制
+蛮多人忽视的吧，会的话起码在spring这个面试点上比竞争对手强    
 
 
 
