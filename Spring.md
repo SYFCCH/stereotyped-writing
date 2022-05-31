@@ -1,9 +1,12 @@
 # stereotyped-writing
 
 这是关于Spring的面试笔记，即是八股文又不是八股文   
-**注意：以下关于IOC AOP的实现方式通通用的是SpringBoot的注解方式实现的，配置就用配置类，而不是基于原始的XML的内部bean外部bean等方式**    
-**对一些基本概念过一下就好，真正重要的是一些平常看不到的知识点**   
-**只是我觉得这些知识比较重要，如果漏了什么重点可以评论区发一下好相互学习**
+笔记涉及大量源码和原理，初学者看起来可能会吃力
+
+对一些基本概念过一下就好，真正重要的是一些平常没注意的知识点   
+
+**注意：以下关于IOC AOP的实现方式通通用的是SpringBoot的注解方式实现的，配置就用配置类，而不是基于原始的XML的内部bean外部bean等方式**
+
 # 基础概念的面试题
 
 
@@ -18,11 +21,12 @@
 
 
 # AOP  ： Aspect Oriented Programming，面向切面编程
-### 概念：
+### AOP概念概念：
 将一些通用的逻辑集中实现，然后通过 AOP 进行逻辑的切入，减少了零散的碎片化代码，提高了系统的可维护性。
 
 具体是含义可以理解为：通过代理的方式，在调用想要的对象方法时候，进行拦截处理，执行切入的逻辑，然后再调用真正的方法实现。
 
+### 一些基本概念
 1.通知(Advice)
 
 通知定义了在切入点代码执行时间点附近需要做的工作。
@@ -68,7 +72,7 @@ Introduction(引入) org.springframework.aop.IntroductionInterceptor
 
 (3)运行时：切面在运行的某个时刻被织入,SpringAOP就是以这种方式织入切面的，原理应该是使用了JDK的动态代理技术
 
-### 使用场景 
+### AOP使用场景 
 日志，权限，监控，事务，异常等
 
 
@@ -82,12 +86,96 @@ Spring官网默认是jdk动态代理
 
 ### jdk动态代理：  必须实现接口，核心是InvocationHandler接口和Proxy类
 ###### 实现方式
+```java
+//定义接口
+public interface UserService {
+    public void addUser(String username,String password);
+
+
+    public void deleteUser(String username);
+}
+//定义要代理的对象
+public class UserImpl implements  UserService{
+    @Override
+    public void addUser(String username, String password) {
+        System.out.println("新增用户的方法");
+    }
+
+    @Override
+    public void deleteUser(String username) {
+        System.out.println("删除用户的方法");
+    }
+}
+
+
+// 定义切面类，通过Proxy得到代理类，把所有接口方法的调用转发到InvocationHandler接口的invoke()方法上，然后根据反射调用目标类的方法
 
 
 
 
-**如果要用上通知的话**
+```
 
+**aop的通知配置**   
+首先了解切入点表达式  
+![img_1.png](img_1.png)   
+
+然后了解五种注解类型
+@Before : 前置通知，在方法执行之前执行
+@After : 后置通知，在方法执行之后执行
+@AfterRunning : 返回通知，在方法返回结果之后执行
+@AfterThrowing : 异常通知，在方法抛出异常之后
+@Around : 环绕通知，围绕着方法执行
+
+
+```java
+@Configuration
+@Aspect
+public class SpringAOPConfig{
+    
+    /**
+     * @param joinPoint
+     * @Before：前置通知
+     * value：切入点表达式  二者加起来构建成为一个切面
+     * JoinPoint：连接点：可以理解为两个圆形的切点，从这个切点就可以获取到当前执行的目标类及方法
+     * 前置通知和后置通知的参数的都是 JoinPoint， 前置后置通知都没有返回值
+     */
+    //在目标方法执行前进行切入
+    // 方法级别：具体到某个具体的方法
+    // @Before(value = "execution(* com.liu.aop.service.impl.*.*(..))")
+    // 表示service包下的所有类所有方法都执行该前置通知
+    @Before("execution(* springTest.*.*(..))")
+    public void before(JoinPoint joinPoint) {
+        System.out.println("方法执行之前执行");
+        System.out.println("正在执行的目标类是: " + joinPoint.getTarget());
+        System.out.println("正在执行的目标方法是: " + joinPoint.getSignature().getName());
+    }
+    
+    /**
+     * 后置通知，属性参数同上面的前置通知
+     * @param joinPoint 前置通知和后置通知独有的参数
+     */
+    @After("execution(* springTest..*.*(..))")
+    public void After(JoinPoint joinPoint) {
+        System.out.println("方法执行之后执行");
+
+    }
+    
+    /**
+     * @param proceedingJoinPoint 环绕通知的正在执行中的连接点（这是环绕通知独有的参数）
+     * @return 目标方法执行的返回值
+     * @Around: 环绕通知，有返回值，环绕通知必须进行放行方法（就相当于拦截器），否则目标方法无法执行
+     */
+    @Around(value = "execution(* springTest.*.*(..))")
+    public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+
+        System.out.println("Around");
+
+        //将目标方法的返回值返回，否则调用该目标方法的方法无法获取到返回值
+        return  proceedingJoinPoint.proceed();
+    }
+
+}
+```
 
 
 ###### 实现原理  
@@ -106,7 +194,18 @@ Spring官网默认是jdk动态代理
 ###### 源码解析   
 
 
-### 动态代理注意事项 
+
+
+
+
+## 动态代理注意事项 
 * 1.不能出现private和final，尤其是final，禁止
 * 2.实现了接口默认是用jdk动态代理，当然也可以强制使用CGLIB
 * 3.没实现接口就必须用CGLIB了
+
+
+
+
+# 面试难点：能说说拦截连的实现吗
+
+
