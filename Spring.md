@@ -13,9 +13,39 @@
 * 7. SpringMVC
 * 8. Spring设计模式
 
+----
 
+先来点概念题   
+# 概念面试题  
 
+----
+###### 1. 什么是Spring?    
+可以从两个层面来理解 Spring。
 
+第一个层面指的是 Spring Framework，是一个开源的应用框架，提供 IOC 和 AOP 降低了应用开发的复杂度。
+
+第二个层面指的是 Spring 全家桶，Spring 发展到今天可以说几乎是统领了 Java，有关 Java 应用开发所需的全部功能， Spring 都提供了解决方案。
+
+包括对批处理的支持、对 web 的支持、对微服务的支持等。 
+
+----
+
+###### 2. Spring由哪些重要的模块组成  
+Spring 最主要的核心就是一个容器，这个容器根据我们的配置文件创建了各种 Bean 且编织它们之间的依赖关系，管理这些 Bean 的生命周期
+* spring-core: 核心库，一些工具类
+* spring-beans: 对Bean的支持，包括控制反转和依赖注入，BeanFactory就在这个模块下
+* spring-context: 上下文，支持数据验证、国际化、事件传播等，ApplicationContext在里面
+* spring-aop：AOP 的支持
+* spring-jdbc：jdbc 的支持
+* spring-orm: orm 的支持
+* spring-webmvc: mvc 的支持
+----
+###### 3. 什么是IOC?
+IOC就是控制反转，首先知道控制指的是控制对象的创建，IOC 容器根据配置文件来创建对象，在对象的生命周期内，在不同时期根据不同配置进行对象的创建改造    
+反转的是关于创建对象且注入依赖对象的这个动作，本来这个动作是由我们程序员在代码里面指定的，比如依赖注入，是需要我们自己去指定代码的，比如A依赖B，那么我们需要在A里面先手动创建B才能创建完整的A       
+反转以后上述程序员   的行为由IOC容器触发，IOC 容器在创建对象 A 的时候，发现依赖对象 B ，根据配置文件，它会创建 B，并将对象 B 注入 A 中，注入的不一定要是对象，也能是属性    
+
+----
 
 首先我们来聊聊Bean的生命周期
 # Spring Bean的生命周期   
@@ -38,17 +68,18 @@
 
 
 
-
+----
 
 # 循环依赖
 这个知识点被问烂了，必须掌握    
 
 
 
-
+----
 
 # IOC       
 
+----
 
 # AOP  ： Aspect Oriented Programming，面向切面编程
 ### AOP概念概念：
@@ -102,9 +133,12 @@ Introduction(引入) org.springframework.aop.IntroductionInterceptor
 
 (3)运行时：切面在运行的某个时刻被织入,SpringAOP就是以这种方式织入切面的，原理应该是使用了JDK的动态代理技术
 
+----
+
 ### AOP使用场景 
 日志，权限，监控，事务，异常等
 
+----
 
 ## AOP的动态代理分两类
 Spring官网默认是jdk动态代理       
@@ -129,7 +163,7 @@ jdk动态代理和CGLIB的区别
 * 3.JDK调用代理方法，是通过反射机制调用，Cglib是通过FastClass机制直接调用方法，Cglib执行效率更高。    
 
 
-
+----
 
 ### jdk动态代理：  必须实现接口，核心是InvocationHandler接口和Proxy类
 Jdk动态代理的类必须要实现接口，并且不能是final修饰的类，方法不能是非public的方法，在生成代理类时快，只生成一个代理文件，生成的代理类实现目标类实现的接口，运行时通过反射调用目标类的方法，调用时慢    
@@ -309,6 +343,12 @@ cglib是使用ASM框架来生成代理类，目标类无须实现接口，生成
 
 
 # 面试难点：能说说拦截链的实现吗      
+
+
+# Spring事务
+
+
+
 
 
 # Spring Aware机制
