@@ -427,3 +427,18 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 常用的视图是Thymeleaf
 # SpringMVC父子容器知道是什么吗  
+![img_12.png](img_12.png)    
+那为什么会有父子之分？
+
+其实 Spring 容器在启动的时候，不会有 SpringMVC 这个概念，只会扫描文件然后创建一个 context ，此时就是父容器。
+
+然后发现是 web 服务需要生成 DispatcherServlet ，此时就会调用 DispatcherServlet#init，这个方法里面最会生成一个新的 context，并把之前的 context 置为自己的 Parent。
+
+这样就有了父子之分，这样指责就更加清晰，子容器就负责 web 部分，父容器则是通用的一些 bean。   
+
+也正是有了父子之分，如果有些人没把 controller 扫包的配置写在 spring-servlet.xml ，而写到了 service.xml 里，那就会把 controller 添加到父容器里，这样子容器里面就找不到了，请求就 404 了。
+
+当然，如果你把 services 和 repositories 添加到子容器是没影响的，不过没必要，分层还是比较好的方式。
+
+对了，子容器可以用父容器的 Bean，父容器不能用子容器的 Bean。
+
