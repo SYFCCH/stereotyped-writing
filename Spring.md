@@ -417,5 +417,13 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 
 # Spring MVC具体的工作原理   
+当一个请求过来时，DispatcherServlet接待，根据处理器映射(HandlerMapping)找到对应的处理执行链(HandlerExecutionChain),里面有很多HandlerInterceptor拦截器    
 
- 
+接着通过HandlerAdapter适配器适配后，执行handler(通过controller调用，返回ModelAndView)    
+
+然后DispatcherServlet解析得到ViewName，传给ViewResolver视图解析器，解析后获得View视图  
+
+然后DispatcherServlet将model数据填充到view，得到最终的Response返回给客户   
+
+常用的视图是Thymeleaf
+# SpringMVC父子容器知道是什么吗  
