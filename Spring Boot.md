@@ -26,11 +26,67 @@ var1: 条件上下文，可以用来获取容器的上下文信息
 var2: 用来获取被@Conditional标注的对象上的所有注解信息       
 
 深入了解第一个参数的类，ConditionContext:  
+```java
+public interface ConditionContext {
 
-![img_17.png](img_17.png)    
+    /**
+     * 返回bean定义注册器，可以通过注册器获取bean定义的各种配置信息
+     */
+    BeanDefinitionRegistry getRegistry();
+
+    /**
+     * 返回ConfigurableListableBeanFactory类型的bean工厂，相当于一个ioc容器对象
+     */
+    @Nullable
+    ConfigurableListableBeanFactory getBeanFactory();
+
+    /**
+     * 返回当前spring容器的环境配置信息对象
+     */
+    Environment getEnvironment();
+
+    /**
+     * 返回资源加载器
+     */
+    ResourceLoader getResourceLoader();
+
+    /**
+     * 返回类加载器
+     */
+    @Nullable
+    ClassLoader getClassLoader();
+}
+```
+
+----  
+如何自定义Condition   
+
+
 
 
 ----
+
+常用的Confition注解   
+![img_18.png](img_18.png)
+
+
+比如在WEB模块的自动配置类WebMvcAutoConfiguration下有这样一段代码：   
+```java
+  @Bean
+  @ConditionalOnMissingBean
+  public InternalResourceViewResolver defaultViewResolver() {
+   InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+   resolver.setPrefix(this.mvcProperties.getView().getPrefix());
+   resolver.setSuffix(this.mvcProperties.getView().getSuffix());
+   return resolver;
+  }   
+```
+常见的@Bean和@ConditionalOnMissingBean注解结合使用，意思是当容器中没有InternalResourceViewResolver这种类型的Bean才会注入。这样写有什么好处呢？好处很明显，可以让开发者自定义需要的视图解析器，如果没有自定义，则使用默认的，这就是Spring Boot为自定义配置提供的便利   
+
+
+
+
+
 ----
 
 # 自动装配顺序  
@@ -40,3 +96,7 @@ var2: 用来获取被@Conditional标注的对象上的所有注解信息
 ----
 ---- 
 # 自动装配原理  
+
+
+
+##  感谢我关注的一些公众号博主丰富了我的知识面   
