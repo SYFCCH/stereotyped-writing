@@ -468,4 +468,47 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 
 
+
+# 一些注解的原理  
+
+1. @Qualifier和@Primary   
+问题：  
+当一个接口有2个不同实现时,使用@Autowired注解时会报org.springframework.beans.factory.NoUniqueBeanDefinitionException异常信息   
+解决：   
+（1）使用Qualifier注解，选择一个对象的名称,通常比较常用
+
+（2）Primary可以理解为默认优先选择,不可以同时设置多个,内部实质是设置BeanDefinition的primary属性   
+
+两个注解的作用   
+
+@Primary：在众多相同的bean中，优先选择用@Primary注解的bean（该注解加在各个bean上）    
+@Qualifier：在众多相同的bean中，@Qualifier指定需要注入的bean（该注解跟随在@Autowired后）      
+
+##### @Qualify   
+
+像@Service  @Component注解，这些是可以取名字的，比如@Component("名字")  
+![img_23.png](img_23.png)    
+##### @Primary
+1.概述  
+该注解是框架在3.0版中引入的。
+
+其作用与功能，当有多个相同类型的bean时，使用@Primary来赋予bean更高的优先级   
+2. 为什么需要@Primary?  
+   在spring 中使用注解，常使用@Autowired， 默认是根据类型Type来自动注入的。但有些特殊情况，对同一个接口，可能会有几种不同的实现类(需要注册多个相同类型的bean),而默认只会采取其中一种的情况下 @Primary 的作用就出来了   
+3. 与@Bean 
+会让这个bean有最高的优先级     
+![img_22.png](img_22.png)     
+4. 与@Component使用  
+有多个接口的实现类的时候，直接在类上使用      
+![img_21.png](img_21.png)      
+
+
+#### Import   
+1. 简介   
+在平时看源码或者很多配置类上面都会出现@Import注解,功能就是和Spring XML 里面 的 一样. @Import注解是用来导入配置类或者一些需要前置加载的类.   
+2. 用途  
+当你项目里需要引用一些第三方的依赖，@Configuration注解的类包名都跟你不一样，包自动扫描就不会去自动加载。这个时候就需要@import了   
+
+
+
 ## 感谢我关注的一些公众号博主丰富了我的知识面 

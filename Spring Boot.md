@@ -119,7 +119,6 @@ open-capacity-platform项目中用到了@ConditionalOnProperty,深入学习下
 
 
 
-
 # 3. @ConfigurationProperties   
 @ConfigurationProperties是springboot提供读取配置文件的一个注解。其对应的bean的后置处理器为
 ConfigurationPropertiesBindingPostProcessor   
