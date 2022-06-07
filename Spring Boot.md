@@ -95,7 +95,7 @@ open-capacity-platform项目中用到了@ConditionalOnProperty,深入学习下
 源码：  
 ![img_20.png](img_20.png)    
 
-@ConditionalOnProperty
+@ConditionalOnProperty   
 1、name或value是必填项    
 2、matchIfMissing：当未找到对应配置是否匹配(默认不匹配)    
 3、常用组合：   
