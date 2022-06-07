@@ -85,7 +85,7 @@ public interface ConditionContext {
 
 ----  
 
-# 2.ConditionalOnProperty  
+# 2.@ConditionalOnProperty  
 
 open-capacity-platform项目中用到了@ConditionalOnProperty,深入学习下     
 ![img_19.png](img_19.png)     
