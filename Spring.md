@@ -47,9 +47,9 @@ Spring 最主要的核心就是一个容器，这个容器根据我们的配置�
 首先我们来聊聊Bean的生命周期
 # Spring Bean的生命周期   
 简略图：  
-![img_2.png](img_2.png)   
+![img_2.png](img/img_2.png)   
 +详细图：
-![img_4.png](img_4.png)  
+![img_4.png](img/img_4.png)  
 
 相同颜色代表相同的一个过程   
 
@@ -168,7 +168,7 @@ Introduction(引入) org.springframework.aop.IntroductionInterceptor
 ## AOP的动态代理分两类
 Spring官网默认是jdk动态代理       
 在SpringBoot2.x之后，aop默认的动态代理方式是CGLIB
-![img.png](img.png)    
+![img.png](img/img.png)    
 如果要修改 SpringBoot 使用 JDK 动态代理，那么在配置文件里设置 spring.aop.proxy-target-class=false    
 至于为什么要换成CGLIB Spring的作者说的是因为jdk动态代理要求接口，没接口会报错，为了舒服就改成动态代理了，反正功能也没什么影响    
 
@@ -256,13 +256,13 @@ public class MyInvoke implements InvocationHandler {
 ```
    
 运行结果：    
-![img_6.png](img_6.png)    
+![img_6.png](img/img_6.png)    
 
 
 要在切入点执行的时间附件做点事情的话可以用下面的方法     
 **aop的通知配置，一般叫他为增强逻辑**   
 首先了解切入点表达式  
-![img_1.png](img_1.png)   
+![img_1.png](img/img_1.png)   
 
 然后了解五种注解类型
 @Before : 前置通知，在方法执行之前执行
@@ -327,10 +327,10 @@ public class SpringAOPConfig{
 
 
 demo目录结构：   
-![img_9.png](img_9.png)   
+![img_9.png](img/img_9.png)   
 
 添加了通知的运行结果如下：     
-![img_8.png](img_8.png)   
+![img_8.png](img/img_8.png)   
 
 # 但我要说一句，实际开发中用切入点表达式代码实在是重复性太高，不简洁，一定要利用好@annotation，自定义注解，去代替切入点表达式，想了解的可以自行百度aop特性@annotation  
 
@@ -395,13 +395,13 @@ return method.getAnnotation(clazz);
 
 # Spring事务
 ### spring有几个事务隔离级别    
-![img_10.png](img_10.png)     
+![img_10.png](img/img_10.png)     
 DEFAULT是使用数据库定义的隔离级别，读未提交，读已提交，可重复读，序列化    
 
 
 ### 有哪几种事务传播行为
 七种事务传播行为     
-![img_11.png](img_11.png)    
+![img_11.png](img/img_11.png)    
 
 propagation:传播
 * PROPAGATION_REQUIRED(默认)，需要事务,当前存在事务则使用，不存在则创建
@@ -450,7 +450,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 常用的视图是Thymeleaf
 # SpringMVC父子容器知道是什么吗  
-![img_12.png](img_12.png)    
+![img_12.png](img/img_12.png)    
 那为什么会有父子之分？
 
 其实 Spring 容器在启动的时候，不会有 SpringMVC 这个概念，只会扫描文件然后创建一个 context ，此时就是父容器。
