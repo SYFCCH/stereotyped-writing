@@ -510,5 +510,5 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 当你项目里需要引用一些第三方的依赖，@Configuration注解的类包名都跟你不一样，包自动扫描就不会去自动加载。这个时候就需要@import了   
 
 
-
+源码解析看<https://blog.csdn.net/mamamalululu00000000/article/details/86711079>    
 ## 感谢我关注的一些公众号博主丰富了我的知识面 
