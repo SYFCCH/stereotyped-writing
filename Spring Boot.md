@@ -124,6 +124,29 @@ open-capacity-platform项目中用到了@ConditionalOnProperty,深入学习下
 ConfigurationPropertiesBindingPostProcessor   
 
 
+
+# 4.@AutoConfigurexxx   
+#### @AutoConfigureAfter
+当前配置类在指定配置类之后执行
+
+#### @AutoConfigureBefore
+
+用在自动配置类上面，表示该自动配置类需要在另外指定的自动配置类配置完之后。   
+
+如 Mybatis 的自动配置类，需要在数据源自动配置类之后。    
+```java
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+public class MybatisAutoConfiguration {
+``` 
+
+#### @AutoConfigureOrder
+指定优先级，数值越小，优先级越高。
+
+
+![img_24.png](img_24.png)    
+
+
+
 # 自动装配顺序  
 
 

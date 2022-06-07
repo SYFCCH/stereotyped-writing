@@ -471,7 +471,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 # 一些注解的原理  
 
-1. @Qualifier和@Primary   
+#### 1. @Qualifier和@Primary   
 问题：  
 当一个接口有2个不同实现时,使用@Autowired注解时会报org.springframework.beans.factory.NoUniqueBeanDefinitionException异常信息   
 解决：   
@@ -503,11 +503,123 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 ![img_21.png](img_21.png)      
 
 
-#### Import   
+#### @Import   
 1. 简介   
 在平时看源码或者很多配置类上面都会出现@Import注解,功能就是和Spring XML 里面 的 一样. @Import注解是用来导入配置类或者一些需要前置加载的类.   
 2. 用途  
 当你项目里需要引用一些第三方的依赖，@Configuration注解的类包名都跟你不一样，包自动扫描就不会去自动加载。这个时候就需要@import了   
+
+
+#### @Order  
+
+@Order 是用来控制bean的执行顺序的而并非加载顺序   
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+@Documented
+public @interface Order {
+
+	/**
+	 * 默认是最低优先级,值越小优先级越高
+	 */
+	int value() default Ordered.LOWEST_PRECEDENCE;
+
+}
+```
+* 注解可以作用在类(接口、枚举)、方法、字段声明（包括枚举常量）；   
+* 注解有一个int类型的参数，可以不传，默认是最低优先级；   
+* 通过常量类的值我们可以推测参数值越小优先级越高；   
+
+用法示例      
+![img_25.png](img_25.png)    
+
+
+源码分析IOC容器是如何根据优先级值来先后执行程序的   
+```java
+    public ConfigurableApplicationContext run(String... args) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        ConfigurableApplicationContext context = null;
+        Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList();
+        this.configureHeadlessProperty();
+        SpringApplicationRunListeners listeners = this.getRunListeners(args);
+        listeners.starting();
+
+        Collection exceptionReporters;
+        try {
+            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);
+            this.configureIgnoreBeanInfo(environment);
+            Banner printedBanner = this.printBanner(environment);
+            context = this.createApplicationContext();
+            exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context);
+            this.prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+            this.refreshContext(context);
+            this.afterRefresh(context, applicationArguments);
+            stopWatch.stop();
+            if (this.logStartupInfo) {
+                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch);
+            }
+
+            listeners.started(context);
+            //这里是重点，调用具体的执行方法
+            this.callRunners(context, applicationArguments);
+        } catch (Throwable var10) {
+            this.handleRunFailure(context, var10, exceptionReporters, listeners);
+            throw new IllegalStateException(var10);
+        }
+
+        try {
+            listeners.running(context);
+            return context;
+        } catch (Throwable var9) {
+            this.handleRunFailure(context, var9, exceptionReporters, (SpringApplicationRunListeners)null);
+            throw new IllegalStateException(var9);
+        }
+    }
+   private void callRunners(ApplicationContext context, ApplicationArguments args) {
+        List<Object> runners = new ArrayList();
+        runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
+        runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
+        //重点来了，按照定义的优先级顺序排序
+        AnnotationAwareOrderComparator.sort(runners);
+        Iterator var4 = (new LinkedHashSet(runners)).iterator();
+        //循环调用具体方法
+        while(var4.hasNext()) {
+            Object runner = var4.next();
+            if (runner instanceof ApplicationRunner) {
+                this.callRunner((ApplicationRunner)runner, args);
+            }
+
+            if (runner instanceof CommandLineRunner) {
+                this.callRunner((CommandLineRunner)runner, args);
+            }
+        }
+
+    }
+
+    private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
+        try {
+            //执行方法
+            runner.run(args);
+        } catch (Exception var4) {
+            throw new IllegalStateException("Failed to execute ApplicationRunner", var4);
+        }
+    }
+
+    private void callRunner(CommandLineRunner runner, ApplicationArguments args) {
+        try {
+            //执行方法
+            runner.run(args.getSourceArgs());
+        } catch (Exception var4) {
+            throw new IllegalStateException("Failed to execute CommandLineRunner", var4);
+        }
+    }
+```
+
+使用场景：   
+AOP 会用到 @Order，如果一个方法被多个 @Around 增强，可以使用 @Order 指定增强执行顺序      
 
 
 源码解析看<https://blog.csdn.net/mamamalululu00000000/article/details/86711079>    
