@@ -332,6 +332,8 @@ demo目录结构：
 添加了通知的运行结果如下：     
 ![img_8.png](img_8.png)   
 
+# 但我要说一句，实际开发中用切入点表达式代码实在是重复性太高，不简洁，一定要利用好@annotation，自定义注解，去代替切入点表达式，想了解的可以自行百度aop特性@annotation  
+
 
 ###### 实现原理  
 * 1.首先通过实现一个InvocationHandler接口得到一个切面类    
@@ -364,8 +366,29 @@ cglib是使用ASM框架来生成代理类，目标类无须实现接口，生成
 * 1.不能代理被final修饰的**类**，**类**，**类**，和非public的**方法**,**方法**，**方法**，重要的事情说三遍！  
 * 2.实现了接口默认是用jdk动态代理，当然也可以强制使用CGLIB   
 * 3.没实现接口就必须用CGLIB了  
- 
 
+
+## SpringAOP里JoinPoint常用方法总结   
+
+```java
+@Before("customerJoinPointerExpression()")
+public void beforeMethod(JoinPoint joinPoint){
+joinPoint.getSignature().getName(); // 获取目标方法名
+joinPoint.getSignature().getDeclaringType().getSimpleName(); // 获取目标方法所属类的简单类名
+joinPoint.getSignature().getDeclaringTypeName(); // 获取目标方法所属类的类名
+joinPoint.getSignature().getModifiers(); // 获取目标方法声明类型(public、private、protected)
+Object[] args = joinPoint.getArgs(); // 获取传入目标方法的参数，返回一个数组
+joinPoint.getTarget(); // 获取被代理的对象
+joinPoint.getThis(); // 获取代理对象自己
+}
+
+// 获取目标方法上的注解
+private <T extends Annotation> T getMethodAnnotation(ProceedingJoinPoint joinPoint, Class<T> clazz) {
+MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+Method method = methodSignature.getMethod();
+return method.getAnnotation(clazz);
+}
+```
 
 # 面试难点：能说说拦截链的实现吗      
 
