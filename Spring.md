@@ -8,12 +8,12 @@
 * 1. 生命周期
 * 2. 循环依赖
 * 3. IOC容器和AOP动态代理的两种实现方式，jdk动态代理和CGLIB的实现加原理加深度源码分析
-* 4. 拦截链详解
+* 4. 拦截链详解  
 * 5. Spring事务 
 * 6. Spring Aware的使用和原理 
 * 7. SpringMVC
 * 8. Spring设计模式
-
+* 9. ImportSelector  
 ----
 
 先来点概念题   
@@ -423,23 +423,24 @@ propagation:传播
 ### 面试题
 1.![img_26.png](img_26.png)     
 
-2.![img_27.png](img_27.png)   
-* 对象没有加入到spring容器中   
-* 方法的访问修饰符不是public
-* 自身调用问题    
-在我们自己调用的时候，一般都是一个类的某个方法去调用另外一个类的某个方法，这样才能走动态代理，而如果是在本方法内去调用这些方法，就不会走动态代理，事务配置就不生效了   
-* 数据源没有配置事务管理器
-* 数据库不支持事务
-* 异常被捕获   
-被外层的异常捕获了，是有可能导致事务失效的   
-* 异常类型错误或者配置错误  
-@Transactional()里面的一些参数没有用在这种情况   
+2. Spring事务什么时候失效    <https://blog.csdn.net/weixin_43564627/article/details/121354260>
+* 从 MySQL 5.5.5 开始的默认存储引擎是：InnoDB，之前默认的都是：MyISAM，所以这点要值得注意，底层引擎不支持事务再怎么搞都是白搭    
+* 没有被 Spring 管理，比如所在的类没有加@Service注解等，这个类就不会被加载成一个 Bean，那这个类就不会被 Spring 管理了，事务自然就失效了
+* 方法不是public的，@Transactional注解只能用于public，如果要用在非 public 方法上，可以开启 AspectJ 代理模式
+* 自身调用问题   
+![img_31.png](img_31.png)    
+就算你两个方法上面都加了@Transactional注解一样是不行的，因为它们发生了自身调用，就调该类自己的方法，而没有经过 Spring 的代理类，默认只有在外部调用事务才会生效，这也是老生常谈的经典问题了    
+* 数据源没有配置事务管理器     
+拿我正在写的项目举例子，要配置事务管理器       
+![img_32.png](img_32.png)       
+* 事务隔离级别设置了不支持    
 
+* 在业务代码中如果抛出RuntimeException异常，事务回滚；但是抛出Exception，事务不回滚；
 
+* 如果在加有事务的方法内，使用了try…catch…语句块对异常进行了捕获，而catch语句块没有throw new RuntimeExecption异常，事务也不会回滚。
 
-
-
-
+   
+Spring团队建议在具体的类（或类的方法）上使用 @Transactional 注解，而不要使用在类所要实现的任何接口上。在接口上使用 @Transactional 注解，只能当你设置了基于接口的代理时它才生效。因为注解是 不能继承 的，这就意味着如果正在使用基于类的代理时，那么事务的设置将不能被基于类的代理所识别，而且对象也将不会被事务代理所包装。    
 
 
 
@@ -456,8 +457,6 @@ propagation:传播
 6. 观察者模式，Spring里的监听器
 7. 适配者模式，SpringMVC中的HandlerAdapter，我们最常用的就是RequestMappingHandlerAdapter
 
-# Spring Aware机制
-蛮多人忽视的吧，会的话起码在spring这个面试点上比竞争对手强    
 
 
 # Spring MVC
@@ -502,7 +501,21 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 # 一些注解的原理  
 
-#### 1. @Qualifier和@Primary   
+#### @Autowired
+@Autowired表示一个属性是否需要进行依赖注入，可以使用在属性、普通方法上、构造方法上。注解中的required属性默认是true，如果没有对象可以注入到属性，则会报出异常；
+
+@Autowired加在某个属性上，spring会从ioc容器中找到bean对象注入到属性上，如果找到多个该类型的Bean对象，则再根据属性的名字从多个Bean对象中确认一个；
+
+@Autowired写在set()方法上，在spring会根据方法的参数类型从ioc容器中找到该类型的Bean对象注入到方法的行参中，并且自动反射调用该方法(被@Autowired修饰的方法一定会执行)，所以一般使用在set方法中、普通方法不用；
+
+@Autowired使用在构造方法中：根据构造方法的形参、形参名，从ioc容器中找到该类型的Bean对象，注入到构造方法的形参中，并且执行该方法；
+
+@Autowired注解在进行依赖注入的时候需要指定bean的时候，和@Qualifier注解一起使用使用@qualifier注解指定名称
+
+
+
+
+#### @Qualifier和@Primary   
 问题：  
 当一个接口有2个不同实现时,使用@Autowired注解时会报org.springframework.beans.factory.NoUniqueBeanDefinitionException异常信息   
 解决：   
@@ -539,6 +552,9 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 在平时看源码或者很多配置类上面都会出现@Import注解,功能就是和Spring XML 里面 的 一样. @Import注解是用来导入配置类或者一些需要前置加载的类.   
 2. 用途  
 当你项目里需要引用一些第三方的依赖，@Configuration注解的类包名都跟你不一样，包自动扫描就不会去自动加载。这个时候就需要@import了   
+
+源码解析看<https://blog.csdn.net/mamamalululu00000000/article/details/86711079>
+  
 
 
 #### @Order  
@@ -627,7 +643,7 @@ public @interface Order {
                 this.callRunner((CommandLineRunner)runner, args);
             }
         }
-
+ 
     }
 
     private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
@@ -652,4 +668,49 @@ public @interface Order {
 使用场景：   
 AOP 会用到 @Order，如果一个方法被多个 @Around 增强，可以使用 @Order 指定增强执行顺序      
 
-源码解析看<https://blog.csdn.net/mamamalululu00000000/article/details/86711079>    
+#### @Async   
+![img_34.png](img_34.png)    
+
+使用方法见网址：       
+<https://baijiahao.baidu.com/s?id=1726732631392844398&wfr=spider&for=pc>
+
+
+总结：    
+Spring容器启动初始化bean时，判断类中是否使用了@Async注解，创建切入点和切入点处理器，根据切入点创建代理，在调用@Async注解标注的方法时，会调用代理，执行切入点处理器invoke方法，将方法的执行提交给线程池，实现异步执行。
+
+所以，需要注意的一个错误用法是，如果A类的a方法(没有标注@Async)调用它自己的b方法(标注@Async)是不会异步执行的，因为从a方法进入调用的都是它本身，不会进入代理    
+
+# Spring Aware
+
+
+# ImportSelector    
+源码     
+![img_30.png](img_30.png)      
+ 
+其主要作用是收集需要导入的配置类，如果该接口的实现类同时实现EnvironmentAware， BeanFactoryAware ，BeanClassLoaderAware或者ResourceLoaderAware，那么在调用其selectImports方法之前先调用上述接口中对应的方法，如果需要在所有的@Configuration处理完在导入时可以实现DeferredImportSelector接口    
+   
+
+
+
+通常我们要定义一个类实现ImportSelector ，它的selectImports方法返回的是String[]，就是需要初始化的类的全类名数组    
+例子：open-capacity-platform项目中log-spring-boot-starter   
+![img_33.png](img_33.png)    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<https://www.cnblogs.com/niechen/p/9262452.html>    
+<https://blog.csdn.net/elim168/article/details/88131614>   
+<https://blog.csdn.net/winterking3/article/details/114537557>   
+
+
+

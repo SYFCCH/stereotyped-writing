@@ -65,7 +65,7 @@ public interface ConditionContext {
 
 
 ----
-
+ 
 常用的Confition注解   
 ![img_18.png](img_18.png)
 
@@ -123,13 +123,12 @@ open-capacity-platform项目中用到了@ConditionalOnProperty,深入学习下
 @ConfigurationProperties是springboot提供读取配置文件的一个注解。其对应的bean的后置处理器为
 ConfigurationPropertiesBindingPostProcessor   
 
-
+在bean被实例化后，会调用后置处理，递归的查找属性，通过反射注入值，对大多数属性而言强制需提供其setter和getter方法    
 
 # 4.@AutoConfigurexxx   
 #### @AutoConfigureAfter
 当前配置类在指定配置类之后执行
 
-#### @AutoConfigureBefore
 
 用在自动配置类上面，表示该自动配置类需要在另外指定的自动配置类配置完之后。   
 
