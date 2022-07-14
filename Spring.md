@@ -415,31 +415,11 @@ return method.getAnnotation(clazz);
 持久性是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响    
 
 
-### spring有几个事务隔离级别    
-![img_10.png](img_10.png)     
-DEFAULT是使用数据库定义的隔离级别，读未提交，读已提交，可重复读，序列化    
 
-
-### 有哪几种事务传播行为
-七种事务传播行为     
-![img_11.png](img_11.png)    
-
-propagation:传播
-* PROPAGATION_REQUIRED(默认)，需要事务,当前存在事务则使用，不存在则创建
-* PROPAGATION_SUPPORTS 支持当前事务,不存在则则以非事务方式 
-* PROPAGATION_MANDATORY 强制性支持当前事务，不存在则抛出异常
-* PROPAGATION_REQUIRES_NEW 创建新事务，如果当前有事务则挂起  
-* PROPAGATION_NOT_SUPPORTED 不支持事务，始终以非事务方式执行   
-* PROPAGATION_NEVER 不支持事务，存在则报错  
-* PROPAGATION_NESTED 嵌套事务，如果当前事务存在，则在嵌套事务中执行，内层事务依赖外层事务，如果外层失败，则会回滚内层，内层失败不影响外层    
-
-事务传播行为的作用是**控制事务的边界**   
 
 
 ## 事务操作   
 事务的体现就是要么都成功要么都失败，一个失败那全都失败   
-
-
 
 
 事务一般建议用在Service业务逻辑层上   
@@ -459,12 +439,71 @@ propagation:传播
 **在Spring进行声明式事务管理，底层使用AOP原理**     
 
 
-### Spring事务管理API      
-![img_39.png](img_39.png)   
+### Spring事务管理API          
+提供一个接口，代表事务管理器，里面有适合多个框架用的实现类   
+Spring里面用事务管理都是用这个接口     
+![img_40.png](img_40.png)    
+![img_39.png](img_39.png)     
+比如要操作数据库或者用Mybatis框架，那就用它的DataSourceTransactionManager这个实现类      
+
+![img_41.png](img_41.png)    
+
+####  声明式事务管理参数配置
+![img_42.png](img_42.png)      
+
+
+#####  propagation:事务传播行为
+定义：当一个事务方法被另外一个事务方法调用的时候，这个事务方法如何进行       
+作用：**控制事务的边界**
+
+
+七种事务传播行为     
+![img_11.png](img_11.png)
+
+propagation:传播
+* PROPAGATION_REQUIRED(默认)，需要事务,当前存在事务则使用，不存在则创建
+* PROPAGATION_SUPPORTS 支持当前事务,不存在则以非事务方式
+* PROPAGATION_MANDATORY 强制性支持当前事务，不存在则抛出异常
+* PROPAGATION_REQUIRES_NEW 创建新事务，如果当前有事务则挂起
+* PROPAGATION_NOT_SUPPORTED 不支持事务，始终以非事务方式执行
+* PROPAGATION_NEVER 不支持事务，存在则报错
+* PROPAGATION_NESTED 嵌套事务，如果当前事务存在，则在嵌套事务中执行，内层事务依赖外层事务，如果外层失败，则会回滚内层，内层失败不影响外层
+![img_43.png](img_43.png)    
+
+以REQUIRED举例讲解：   
+![img_44.png](img_44.png)    
+以REQUIRED_NEW举例   
+![img_45.png](img_45.png)    
+A和B位两个事务，将调用B方法的A作为外层事务，而将事务B作为内层事务，两层事务互不相干，也就是说A出现了错误会回滚，但B没错的话就不会回滚   
+参数使用代码示例如下：        
+![img_46.png](img_46.png)    
+
+
+### spring有几个事务隔离级别
+![img_10.png](img_10.png)     
+DEFAULT是使用数据库定义的隔离级别，读未提交，读已提交，可重复读，序列化    
+![img_47.png](img_47.png)    
+
+如何设置呢？    
+![img_48.png](img_48.png)          
+重点掌握可重复读，MYSQL默认是repeatable_read
+
+#### @Transactional其他参数
+![img_49.png](img_49.png)   
+
+![img_50.png](img_50.png)   
+
+![img_51.png](img_51.png)      
+用法就是加上异常的.class         
+![img_52.png](img_52.png)       
 
 
 
-### 面试题
+#### 完全注解实现事务   
+自定义配置类，然后用@Bean配置事务管理器  
+![img_53.png](img_53.png)   
+
+### 面试题 
 1.![img_26.png](img_26.png)     
 
 2. Spring事务什么时候失效    <https://blog.csdn.net/weixin_43564627/article/details/121354260>
