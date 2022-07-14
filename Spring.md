@@ -370,7 +370,7 @@ cglib是使用ASM框架来生成代理类，目标类无须实现接口，生成
 
 
 ## SpringAOP里JoinPoint常用方法总结   
-
+示例代码       
 ```java
 @Before("customerJoinPointerExpression()")
 public void beforeMethod(JoinPoint joinPoint){
@@ -394,7 +394,27 @@ return method.getAnnotation(clazz);
 # 面试难点：能说说拦截链的实现吗      
 
 
+
+
+
+
+
+
+
 # Spring事务
+
+### 事务概念   
+![img_36.png](img_36.png)    
+原子性（Atomicity）    
+原子性是指事务是一个不可分割的工作单位，事务中的操作要么都发生，要么都不发生。   
+一致性（Consistency）   
+事务前后数据的完整性必须保持一致。   
+隔离性（Isolation）   
+事务的隔离性是多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。    
+持久性（Durability）     
+持久性是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响    
+
+
 ### spring有几个事务隔离级别    
 ![img_10.png](img_10.png)     
 DEFAULT是使用数据库定义的隔离级别，读未提交，读已提交，可重复读，序列化    
@@ -416,7 +436,31 @@ propagation:传播
 事务传播行为的作用是**控制事务的边界**   
 
 
+## 事务操作   
+事务的体现就是要么都成功要么都失败，一个失败那全都失败   
 
+
+
+
+事务一般建议用在Service业务逻辑层上   
+
+在Spring进行事务管理操作有两种方式   
+###### 1是编程式事务管理    
+事务操作过程     
+1. 第一步开启事务   
+2. 进行业务操作，用try catch包起来   
+3. 没有发送异常，提交事务   
+4. 出现异常，事务回滚   
+![img_38.png](img_38.png)       
+###### 2是声明式事务管理    
+有基于注解方式和基于xml配置文件方式    
+一般都是注解方式   
+
+**在Spring进行声明式事务管理，底层使用AOP原理**     
+
+
+### Spring事务管理API      
+![img_39.png](img_39.png)   
 
 
 
@@ -499,7 +543,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 
 
-# 一些注解的原理  
+# 一些注解  
 
 #### @Autowired
 @Autowired表示一个属性是否需要进行依赖注入，可以使用在属性、普通方法上、构造方法上。注解中的required属性默认是true，如果没有对象可以注入到属性，则会报出异常；
@@ -532,6 +576,8 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 像@Service  @Component注解，这些是可以取名字的，比如@Component("名字")  
 ![img_23.png](img_23.png)    
+
+
 ##### @Primary
 1.概述  
 该注解是框架在3.0版中引入的。
@@ -679,6 +725,13 @@ AOP 会用到 @Order，如果一个方法被多个 @Around 增强，可以使用
 Spring容器启动初始化bean时，判断类中是否使用了@Async注解，创建切入点和切入点处理器，根据切入点创建代理，在调用@Async注解标注的方法时，会调用代理，执行切入点处理器invoke方法，将方法的执行提交给线程池，实现异步执行。
 
 所以，需要注意的一个错误用法是，如果A类的a方法(没有标注@Async)调用它自己的b方法(标注@Async)是不会异步执行的，因为从a方法进入调用的都是它本身，不会进入代理    
+
+
+#### @Component,@Controller,@Service,@Repository
+![img_37.png](img_37.png)    
+
+
+
 
 # Spring Aware
 
