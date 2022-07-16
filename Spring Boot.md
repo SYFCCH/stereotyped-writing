@@ -146,16 +146,15 @@ public class MybatisAutoConfiguration {
 
 
 
-# 自动装配顺序  
 
 
 
 
 
 
-----
----- 
-# 自动装配原理  
+
+
+
 
 
 
@@ -336,7 +335,9 @@ ConditionalOnProperty当配置文件中配置了哪一个属性才生效
 ![img_85.png](img_85.png)    
 
 
-### @ConfigurationProperties  
+### @ConfigurationProperties:用来读取配置文件          
+![img_108.png](img_108.png)       
+
 ![img_86.png](img_86.png)    
 
 ![img_87.png](img_87.png)  
@@ -353,32 +354,113 @@ ConditionalOnProperty当配置文件中配置了哪一个属性才生效
 
  
 # 自动配置，源码分析   
-![img_92.png](img_92.png)    
+![img_92.png](img_92.png)      
+
+![img_93.png](img_93.png)    
+@Configuration和@ComponentScan就不用说了，一个配置类，一个扫描包   主要来讲@EnableAutoConfiguration   
+
+##### @EnableAutoConfiguration
+源码如下：
+```java
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+public @interface EnableAutoConfiguration {
+    String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
+
+    Class<?>[] exclude() default {};
+
+    String[] excludeName() default {};
+}   
+```
+
+1. @EnableAutoConfiguration里面第一个陌生的是@AutoConfigurationPackage，机翻就是自动配置包，指定了默认的包规则，批量注册Register            
+
+
+
+
+自动配置包源码如下：  
+```java
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Import({Registrar.class})      //给容器中导入一个组件   
+public @interface AutoConfigurationPackage {
+    String[] basePackages() default {};
+
+    Class<?>[] basePackageClasses() default {};
+}
+```
+ 
+可以看到@Import导入了Registrar给容器导入了一系列组件  
+点进Registrar的源码   
+```java
+        public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+            AutoConfigurationPackages.register(registry, (String[])(new AutoConfigurationPackages.PackageImports(metadata)).getPackageNames().toArray(new String[0]));
+        }
+```
+AutoConfigurationPackages.PackageImports(metadata)).getPackageNames()获得的包名是主类所在的包    
+也就是springboot启动类SpringbootApplication所在的那个包，然后注册这个包下的所有组件   
+
+2. @EnableAutoConfiguration第二个要点是@Import({AutoConfigurationImportSelector.class})，给容器批量导入一些组件       
+![img_96.png](img_96.png)    
+![img_97.png](img_97.png)   
+![img_98.png](img_98.png)    
+![img_99.png](img_99.png)    
+那些开头要加载的类有127个写死在META-INF下的spring.factories文件中，当然了有很多都不会加载，其实表面来看是取决于你的pom导入了什么包，因为你即使配置文件中写了这个类但是不满足这个类上面的若干个@ConditionalOnXXX一大堆东西
+
+
+
+
+会按需开启自动配置项
+![img_100.png](img_100.png)   
+这些自动配置项，是通过各种各样的@ConfitionalOnXXX注解去控制要自动配置什么       
+![img_101.png](img_101.png)       
+![img_102.png](img_102.png)      
+
+
+![img_103.png](img_103.png)     
+
+![img_105.png](img_105.png)    
+不直接返回MultipartResolver，而是写参数，让参数对象自己去容器中找到这个组件然后再返回该对象，这样子定义了命名规范   
+不管用户配置的是啥，都能返回我们要求的名字    
+
+像springboot有关中文的输入输出啊都不会乱码，是因为底层已经帮我们配好了    
+
+
+![img_104.png](img_104.png)    
+然后看这个字符过滤器，@ConditionalOnMissingBean，如果用户没配那我系统就帮你配     
+
+通过上述的例子我们可以发现springboot的设计模式
+![img_107.png](img_107.png)     
+
+# 自动装配的流程   
+![img_109.png](img_109.png)   
+
+所以要改啥就在application.properties或者 .yaml文件中改就行了，可以查文档也可以直接去底层源码看要改什么属性    
+
+
+# 开发提示   
+我们要在配置文件中写属性什么的，如果不是官方的不会有提示，我们可以自己开启   
+![img_110.png](img_110.png)     
+
+可以加入这个依赖   
+![img_111.png](img_111.png)     
+然后就有提示了     
+![img_112.png](img_112.png)       
+
+最后是项目打包的时候，不要把这个提示器打包了，jvm会额外消耗       
+![img_113.png](img_113.png)    
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Web开发   
 
 
 
