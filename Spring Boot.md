@@ -352,6 +352,9 @@ ConditionalOnProperty当配置文件中配置了哪一个属性才生效
 ![img_91.png](img_91.png)    
 
  
+# 自动配置，源码分析   
+![img_92.png](img_92.png)    
+
 
 
 
