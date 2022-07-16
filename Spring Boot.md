@@ -57,7 +57,7 @@ public interface ConditionContext {
     ClassLoader getClassLoader();
 }
 ```
-
+    
 ----  
 如何自定义Condition   
 
@@ -150,10 +150,39 @@ public class MybatisAutoConfiguration {
 
 
 
+
+
+
 ----
 ---- 
 # 自动装配原理  
 
 
 
-##  感谢我关注的一些公众号博主丰富了我的知识面   
+
+
+
+# Springboot操作     
+
+### springboot的一些便利地方   
+因为springboot-starter依赖就包含了很多平常使用的依赖并且指定了版本，如果你要自定义版本号，就参考以下示例(将mysql8.0依赖改成自己想要的)    
+步骤：   如果发现和包的版本不一样就手动更改   
+![img_55.png](img_55.png)    
+实例：  
+![img_54.png](img_54.png)       
+   
+
+开发的时候主要是引入springboot-starter-*，这样就有一整套依赖了   
+![img_56.png](img_56.png)    
+![img_57.png](img_57.png)   
+![img_58.png](img_58.png)     
+
+
+![img_59.png](img_59.png)    
+
+@SpringBootApplication的部分源代码         
+![img_60.png](img_60.png)    
+
+
+![img_61.png](img_61.png)    
+自动配置是按需加载的，你pom有什么，他才加载什么    
