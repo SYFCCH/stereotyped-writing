@@ -349,7 +349,7 @@ ConditionalOnProperty当配置文件中配置了哪一个属性才生效
 那我们就用第二种方法：@EnableConfigurationPropertiessds   
 
 这种方法只能在配置类上写  
-![img_91.png](img_91.png)    
+![img_91.png](img_91.png)     
 
  
 # 自动配置，源码分析   
