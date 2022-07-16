@@ -185,4 +185,267 @@ public class MybatisAutoConfiguration {
 
 
 ![img_61.png](img_61.png)    
-自动配置是按需加载的，你pom有什么，他才加载什么    
+自动配置是按需加载的，你pom有什么，他才加载什么      
+
+
+
+# springboot底层注解
+
+### 配置类和Bean的编写方法 --> @Configuration,@Bean   
+
+![img_62.png](img_62.png)    
+也可以不叫方法名，可以用@Bean("名字")来自定义名字  
+然后这些实例默认是单实例的，幂等性，这就不用说了   
+![img_66.png](img_66.png)  
+结果如下： 证明是单实例的，具体的原理后面说       
+![img_67.png](img_67.png)    
+###### 代码  
+![img_69.png](img_69.png)    
+配置类   
+```java
+@Configuration  // 告诉Springboot这是一个配置类
+public class ServiceConfig {
+
+    @Bean   //给容器中添加组件，以方法名作为id。返回类型为Pet，返回值为方法返回的示例，就是组件在容器中的实例
+    public Pet getPet() {
+        return new Pet("石煜峰");
+    }
+
+    @Bean("tom")
+    public Tom getTom() {
+        return new Tom("曹程红");
+    }
+
+}   
+
+
+```
+启动类    
+```java
+@SpringBootApplication
+public class SpringbootApplication {
+
+    public static void main(String[] args) {
+        //返回我们的IOC容器
+        ConfigurableApplicationContext run = SpringApplication.run(SpringbootApplication.class, args);
+        //查看容器里面的组件
+        for (String beanDefinitionName : run.getBeanDefinitionNames()) {
+            System.out.println(beanDefinitionName);
+        }
+
+
+        //从容器中获取组件
+        Tom tom = run.getBean("tom", Tom.class);
+        Tom tom2 = run.getBean("tom", Tom.class);
+        System.out.println(tom == tom2);
+    }
+
+}  
+```
+
+###### 结果  
+![img_65.png](img_65.png)      
+
+
+注意配置类本身也是容器中的一个组件      
+
+##### springboot2。0之后    @Configuration多了一个注解属性proxyBeanMethods，默认是true    
+![img_70.png](img_70.png)    
+```java
+@Configuration(proxyBeanMethods = true)    
+```
+
+翻译过来是  "代理bean的方法"   
+
+
+![img_71.png](img_71.png)      
+
+我们可以验证一下调用这些注册方法是否都是一个对象      
+![img_73.png](img_73.png)   
+结果是true，证明了结论是正确的      
+原因就在于，@Configuration中的proxyBeanMethods默认为true，说明这个方法会被代理    
+
+我们把配置类打印出来   
+![img_75.png](img_75.png)    
+结果如下：    
+![img_74.png](img_74.png)     
+被CGLIB增强了，所以我们获取到的是代理对象        
+
+这个属性是true，就是代理对象调用方法，springboot会检查这个组件是否在容器中，没有再创建，有的话就用，保持这个组件的单实例   
+
+如果是false的话那就不是单实例对象了，每次调用注册方法都会返回一个新的对象    
+
+用法是组件依赖，为true的时候下面示例就是正确的      
+![img_76.png](img_76.png)    
+
+
+springboot2.0的一个突破就是分为了全模式和轻量级模式，
+全模式就是需要代理，proxyBeanMethods=true，这样可以完成组件依赖，但是每次启动都会检查是否满足依赖，启动较慢   
+轻量级模式是proxyBeanMethods=false，这样就不用检查了，启动很快，所以如果我们平常不需要用到组件依赖的话，我们都是设置为@configuration(proxyBeanMethods = false)   
+
+
+
+### @Import     
+可以用在配置类或者任意一个组件上     
+注解源码   
+![img_77.png](img_77.png)    
+
+使用示例和作用    
+![img_79.png](img_79.png)    
+可以写自己本地代码写的，也可以写maven其他包下的类，springboot会自动调用他们的无参构造器     
+
+代码示例:
+我在配置类导入了Pet这个类  
+```java
+@Import({Pet.class, AnnotationBeanNameGenerator.class})
+@Configuration(proxyBeanMethods = false)  // 告诉Springboot这是一个配置类
+public class ServiceConfig {
+```
+
+```java
+@SpringBootApplication
+public class SpringbootApplication {
+
+    public static void main(String[] args) {
+        //返回我们的IOC容器
+        ConfigurableApplicationContext run = SpringApplication.run(SpringbootApplication.class, args);
+        String[] beanNamesForType = run.getBeanNamesForType(Pet.class);
+        for (String str : beanNamesForType) {
+            System.out.println(str);
+        }
+
+        AnnotationBeanNameGenerator bean = run.getBean(AnnotationBeanNameGenerator.class);
+        System.out.println(bean);
+    }
+}
+```
+运行结果如下：   
+![img_82.png](img_82.png)   
+Pet有两条打印的原因是一个是我Import导进去的Pet对象默认名字为类的全路径名，然后第二个是我配置类@Bean创建的，名字为构造的方法名      
+
+### @Conditional     
+条件装配：满足Conditional指定的条件，则进行组件进入    
+
+![img_84.png](img_84.png)   
+大部分都见名知意   
+ConditionalOnSingleCandidate,需要组件只有一个实例或者他有多个实例但是有一个实例是主实例，就是用@Primary标注的实例
+ConditionalOnProperty当配置文件中配置了哪一个属性才生效   
+
+
+##### @ImportResource:当有人还在用xml配置文件的时候，你可以直接用这个导入到配置类，就可以不用一个个写@bean
+![img_85.png](img_85.png)    
+
+
+### @ConfigurationProperties  
+![img_86.png](img_86.png)    
+
+![img_87.png](img_87.png)  
+![img_88.png](img_88.png)    
+![img_89.png](img_89.png)   
+
+
+如果我们引用的是其他包下的，那个类没有@Component    
+![img_90.png](img_90.png)   
+那我们就用第二种方法：@EnableConfigurationPropertiessds   
+
+这种方法只能在配置类上写  
+![img_91.png](img_91.png)    
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 一些报错信息的总结   
+![img_80.png](img_80.png)    
