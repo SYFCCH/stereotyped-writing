@@ -460,7 +460,7 @@ AutoConfigurationPackages.PackageImports(metadata)).getPackageNames()获得的�
 
 
 
-# Web开发   
+# Web开发     
 
 
 
@@ -470,11 +470,21 @@ AutoConfigurationPackages.PackageImports(metadata)).getPackageNames()获得的�
 
 
 
+# 自定义starter   
+<https://www.bilibili.com/video/BV19K4y1L7MT?p=83&vd_source=13963cd0b42527aeff4eae71d903e659>
 
 
+![img_114.png](img_114.png)    
 
 
+# springboot启动过程  
 
+1. springboot启动过程 
+![img_115.png](img_115.png)     
+
+源码中   
+getSpringFactoriesInstances()  这个方法的作用就是去spring.factories文件中相关类
+要注意，spring.factories是所有pom依赖里面的spring.factories，各个包下的，很多都有这个文件，当然了最底层的这个文件是在名为spring-boot-版本号的jar包下      
 
 
 
