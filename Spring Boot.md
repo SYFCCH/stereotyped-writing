@@ -6,7 +6,7 @@
 # 1. @Conditional     
 @Conditional注解是从Spring4.0才有的，可以用在任何类型或者方法上面，通过@Conditional注解可以配置一些条件判断，当所有条件都满足的时候，被@Conditional标注的目标才会被Spring容器处理     
 @Conditional的使用很广，比如控制某个Bean是否需要注册，在Spring Boot中的变形很多，比如@ConditionalOnMissingBean、@ConditionalOnBean等等，如下：    
-![img_13.png](img_13.png)    
+![img_13.png](img_13.png)     
 像我项目就用到了@ConditionalOnProperty   
 ![img_14.png](img_14.png)   
 
@@ -442,6 +442,10 @@ AutoConfigurationPackages.PackageImports(metadata)).getPackageNames()获得的�
 ![img_109.png](img_109.png)   
 
 所以要改啥就在application.properties或者 .yaml文件中改就行了，可以查文档也可以直接去底层源码看要改什么属性    
+
+# 自动装配原理  
+SpringBoot 启动的时候，会调用 run 方法，run 方法会刷新容器，刷新容器的时候他会通过 @EnableAutoConfiguration 注解找到META-INF/spring.factories 文件中的所有自动配置类，我们会在启动的时候把这些配置类加载到容器里面，这些配置类里面有好多的条件注解，他会根据我们有没有引入相应的 jar 包，有没有注入一些 bean 来自动的给我们的容器注入我们需要的 bean ，于是就实现了自动装配
+
 
 
 # 开发提示   

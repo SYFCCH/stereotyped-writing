@@ -19,7 +19,7 @@
 先来点概念题   
 # 概念面试题  
 
-----
+----   
 ###### 1. 什么是Spring?    
 可以从两个层面来理解 Spring。
 
@@ -595,7 +595,8 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 @Autowired注解在进行依赖注入的时候需要指定bean的时候，和@Qualifier注解一起使用使用@qualifier注解指定名称
 
-
+#### @Resource
+![img_116.png](img_116.png)   
 
 
 #### @Qualifier和@Primary   
@@ -768,6 +769,8 @@ Spring容器启动初始化bean时，判断类中是否使用了@Async注解，�
 
 #### @Component,@Controller,@Service,@Repository
 ![img_37.png](img_37.png)    
+
+
 
 
 
