@@ -90,3 +90,9 @@ upCount就是有效服务（活着的机器）的数量
 for自旋锁CAS比较并交换更新取模后的值   
 代码很优雅，做到了尽量不用锁    
 
+
+
+
+### Nacos使用Ribbon
+<https://blog.csdn.net/zouliping123456/article/details/121682276?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-121682276-blog-124110808.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-121682276-blog-124110808.nonecase&utm_relevant_index=1>  
+
