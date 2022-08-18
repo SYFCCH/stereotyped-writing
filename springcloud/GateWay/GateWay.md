@@ -111,11 +111,11 @@ eureka:
             - Path=/XXX/XXX        # 断言，路径相匹配的进行路由
 ```
 配置了uri后，当用户访问http://localhost:XXXX后，9527端口的网关会挡在他前面    
-没配置网关以前   
-![img_6.png](img_6.png)  
+没配置网关以前     
+![img.png](GateWay_img/img.png)      
 配置网关以后,能通过9527访问8001    
-![img_5.png](img_5.png)  
-![img_7.png](img_7.png)
+![img_1.png](GateWay_img/img_1.png)
+![img_2.png](GateWay_img/img_2.png)
 
 ##### 动态路由
 ```yaml
@@ -162,8 +162,8 @@ eureka:
 
       uri: lb://cloud-payment-service #匹配后提供服务的路由地址
 ```  
-![img_10.png](img_10.png)  
-![img_11.png](img_11.png)  
+![img_3.png](GateWay_img/img_3.png)
+![img_4.png](GateWay_img/img_4.png)
 实现了网关层面服务的负载均衡
 
 ##### Predicate
@@ -218,6 +218,6 @@ public class MyGatewayFilter implements GlobalFilter, Ordered {
 }
 ```  
 有uname参数就访问   
-![img_12.png](img_12.png)  
+![img_5.png](GateWay_img/img_5.png)
 没有uname参数就访问不了  
-![img_13.png](img_13.png)     
+![img_6.png](GateWay_img/img_6.png)     
