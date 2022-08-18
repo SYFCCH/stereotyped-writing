@@ -195,11 +195,11 @@ public class MybatisAutoConfiguration {
 ![img_62.png](SpringBoot_Img/img_62.png)    
 也可以不叫方法名，可以用@Bean("名字")来自定义名字  
 然后这些实例默认是单实例的，幂等性，这就不用说了   
-![img_66.png](../img_66.png)  
+![img_66.png](SpringBoot_Img/img_66.png)  
 结果如下： 证明是单实例的，具体的原理后面说       
-![img_67.png](../img_67.png)    
+![img_67.png](SpringBoot_Img/img_67.png)    
 ###### 代码  
-![img_69.png](../img_69.png)    
+![img_69.png](SpringBoot_Img/img_69.png)    
 配置类   
 ```java
 @Configuration  // 告诉Springboot这是一个配置类
@@ -243,13 +243,13 @@ public class SpringbootApplication {
 ```
 
 ###### 结果  
-![img_65.png](../img_65.png)      
+![img_65.png](SpringBoot_Img/img_65.png)      
 
 
 注意配置类本身也是容器中的一个组件      
 
 ##### springboot2。0之后    @Configuration多了一个注解属性proxyBeanMethods，默认是true    
-![img_70.png](../img_70.png)    
+![img_70.png](SpringBoot_Img/img_70.png)    
 ```java
 @Configuration(proxyBeanMethods = true)    
 ```
@@ -257,17 +257,17 @@ public class SpringbootApplication {
 翻译过来是  "代理bean的方法"   
 
 
-![img_71.png](../img_71.png)      
+![img_71.png](SpringBoot_Img/img_71.png)      
 
 我们可以验证一下调用这些注册方法是否都是一个对象      
-![img_73.png](../img_73.png)   
+![img_73.png](SpringBoot_Img/img_73.png)   
 结果是true，证明了结论是正确的      
 原因就在于，@Configuration中的proxyBeanMethods默认为true，说明这个方法会被代理    
 
 我们把配置类打印出来   
-![img_75.png](../img_75.png)    
+![img_75.png](../杂图/img_75.png)    
 结果如下：    
-![img_74.png](../img_74.png)     
+![img_74.png](SpringBoot_Img/img_74.png)     
 被CGLIB增强了，所以我们获取到的是代理对象        
 
 这个属性是true，就是代理对象调用方法，springboot会检查这个组件是否在容器中，没有再创建，有的话就用，保持这个组件的单实例   
@@ -275,7 +275,7 @@ public class SpringbootApplication {
 如果是false的话那就不是单实例对象了，每次调用注册方法都会返回一个新的对象    
 
 用法是组件依赖，为true的时候下面示例就是正确的      
-![img_76.png](../img_76.png)    
+![img_76.png](SpringBoot_Img/img_76.png)    
 
 
 springboot2.0的一个突破就是分为了全模式和轻量级模式，
@@ -287,10 +287,10 @@ springboot2.0的一个突破就是分为了全模式和轻量级模式，
 ### @Import     
 可以用在配置类或者任意一个组件上     
 注解源码   
-![img_77.png](../img_77.png)    
+![img_77.png](SpringBoot_Img/img_77.png)    
 
 使用示例和作用    
-![img_79.png](../img_79.png)    
+![img_79.png](SpringBoot_Img/img_79.png)    
 可以写自己本地代码写的，也可以写maven其他包下的类，springboot会自动调用他们的无参构造器     
 
 代码示例:
@@ -319,24 +319,24 @@ public class SpringbootApplication {
 }
 ```
 运行结果如下：   
-![img_82.png](../img_82.png)   
+![img_82.png](SpringBoot_Img/img_82.png)   
 Pet有两条打印的原因是一个是我Import导进去的Pet对象默认名字为类的全路径名，然后第二个是我配置类@Bean创建的，名字为构造的方法名      
 
 ### @Conditional     
 条件装配：满足Conditional指定的条件，则进行组件进入    
 
-![img_84.png](../img_84.png)   
+![img_84.png](SpringBoot_Img/img_84.png)   
 大部分都见名知意   
 ConditionalOnSingleCandidate,需要组件只有一个实例或者他有多个实例但是有一个实例是主实例，就是用@Primary标注的实例
 ConditionalOnProperty当配置文件中配置了哪一个属性才生效   
 
 
 ##### @ImportResource:当有人还在用xml配置文件的时候，你可以直接用这个导入到配置类，就可以不用一个个写@bean
-![img_85.png](../img_85.png)    
+![img_85.png](SpringBoot_Img/img_85.png)    
 
 
 ### @ConfigurationProperties:用来读取配置文件          
-![img_108.png](../img_108.png)       
+![img_108.png](SpringBoot_Img/img_108.png)       
 
 ![img_86.png](SpringBoot_Img/img_86.png)    
 
@@ -436,10 +436,10 @@ AutoConfigurationPackages.PackageImports(metadata)).getPackageNames()获得的�
 然后看这个字符过滤器，@ConditionalOnMissingBean，如果用户没配那我系统就帮你配     
 
 通过上述的例子我们可以发现springboot的设计模式
-![img_107.png](../img_107.png)     
+![img_107.png](SpringBoot_Img/img_107.png)     
 
 # 自动装配的流程   
-![img_109.png](../img_109.png)   
+![img_109.png](SpringBoot_Img/img_109.png)   
 
 所以要改啥就在application.properties或者 .yaml文件中改就行了，可以查文档也可以直接去底层源码看要改什么属性    
 
@@ -450,15 +450,15 @@ SpringBoot 启动的时候，会调用 run 方法，run 方法会刷新容器，
 
 # 开发提示   
 我们要在配置文件中写属性什么的，如果不是官方的不会有提示，我们可以自己开启   
-![img_110.png](../img_110.png)     
+![img_110.png](SpringBoot_Img/img_110.png)     
 
 可以加入这个依赖   
-![img_111.png](../img_111.png)     
+![img_111.png](SpringBoot_Img/img_111.png)     
 然后就有提示了     
-![img_112.png](../img_112.png)       
+![img_112.png](SpringBoot_Img/img_112.png)       
 
 最后是项目打包的时候，不要把这个提示器打包了，jvm会额外消耗       
-![img_113.png](../img_113.png)    
+![img_113.png](SpringBoot_Img/img_113.png)    
 
 
 
@@ -478,13 +478,13 @@ SpringBoot 启动的时候，会调用 run 方法，run 方法会刷新容器，
 <https://www.bilibili.com/video/BV19K4y1L7MT?p=83&vd_source=13963cd0b42527aeff4eae71d903e659>
 
 
-![img_114.png](../img_114.png)    
+![img_114.png](SpringBoot_Img/img_114.png)    
 
 
 # springboot启动过程  
 
 1. springboot启动过程 
-![img_115.png](../img_115.png)     
+![img_115.png](SpringBoot_Img/img_115.png)     
 
 源码中   
 getSpringFactoriesInstances()  这个方法的作用就是去spring.factories文件中相关类
@@ -547,4 +547,4 @@ getSpringFactoriesInstances()  这个方法的作用就是去spring.factories文
 
 
 # 一些报错信息的总结   
-![img_80.png](../img_80.png)    
+![img_80.png](SpringBoot_Img/img_80.png)    

@@ -48,9 +48,9 @@ Spring 最主要的核心就是一个容器，这个容器根据我们的配置�
 首先我们来聊聊Bean的生命周期
 # Spring Bean的生命周期   
 简略图：  
-![img_2.png](img_2.png)   
+![img_2.png](Spring_img/img_2.png)   
 +详细图：
-![img_4.png](img_4.png)  
+![img_4.png](Spring_img/img_4.png)  
 
 相同颜色代表相同的一个过程   
 
@@ -169,7 +169,7 @@ Introduction(引入) org.springframework.aop.IntroductionInterceptor
 ## AOP的动态代理分两类
 Spring官网默认是jdk动态代理       
 在SpringBoot2.x之后，aop默认的动态代理方式是CGLIB
-![img.png](img.png)    
+![img.png](Spring_img/img.png)    
 如果要修改 SpringBoot 使用 JDK 动态代理，那么在配置文件里设置 spring.aop.proxy-target-class=false    
 至于为什么要换成CGLIB Spring的作者说的是因为jdk动态代理要求接口，没接口会报错，为了舒服就改成动态代理了，反正功能也没什么影响    
 
@@ -257,13 +257,13 @@ public class MyInvoke implements InvocationHandler {
 ```
    
 运行结果：    
-![img_6.png](img_6.png)    
+![img_6.png](Spring_img/img_6.png)    
 
 
 要在切入点执行的时间附件做点事情的话可以用下面的方法     
 **aop的通知配置，一般叫他为增强逻辑**   
 首先了解切入点表达式  
-![img_1.png](img_1.png)   
+![img_1.png](Spring_img/img_1.png)   
 
 然后了解五种注解类型
 @Before : 前置通知，在方法执行之前执行
@@ -328,10 +328,10 @@ public class SpringAOPConfig{
 
 
 demo目录结构：   
-![img_9.png](img_9.png)   
+![img_9.png](Spring_img/img_9.png)   
 
 添加了通知的运行结果如下：     
-![img_8.png](img_8.png)   
+![img_8.png](Spring_img/img_8.png)   
 
 # 但我要说一句，实际开发中用切入点表达式代码实在是重复性太高，不简洁，一定要利用好@annotation，自定义注解，去代替切入点表达式，想了解的可以自行百度aop特性@annotation  
 
@@ -404,7 +404,7 @@ return method.getAnnotation(clazz);
 # Spring事务
 
 ### 事务概念   
-![img_36.png](img_36.png)    
+![img_36.png](Spring_img/img_36.png)    
 原子性（Atomicity）    
 原子性是指事务是一个不可分割的工作单位，事务中的操作要么都发生，要么都不发生。   
 一致性（Consistency）   
@@ -431,7 +431,7 @@ return method.getAnnotation(clazz);
 2. 进行业务操作，用try catch包起来   
 3. 没有发送异常，提交事务   
 4. 出现异常，事务回滚   
-![img_38.png](img_38.png)       
+![img_38.png](Spring_img/img_38.png)       
 ###### 2是声明式事务管理    
 有基于注解方式和基于xml配置文件方式    
 一般都是注解方式   
@@ -442,14 +442,14 @@ return method.getAnnotation(clazz);
 ### Spring事务管理API          
 提供一个接口，代表事务管理器，里面有适合多个框架用的实现类   
 Spring里面用事务管理都是用这个接口     
-![img_40.png](img_40.png)    
-![img_39.png](img_39.png)     
+![img_40.png](Spring_img/img_40.png)    
+![img_39.png](Spring_img/img_39.png)     
 比如要操作数据库或者用Mybatis框架，那就用它的DataSourceTransactionManager这个实现类      
 
-![img_41.png](img_41.png)    
+![img_41.png](Spring_img/img_41.png)    
 
 ####  声明式事务管理参数配置
-![img_42.png](img_42.png)      
+![img_42.png](Spring_img/img_42.png)      
 
 
 #####  propagation:事务传播行为
@@ -458,7 +458,7 @@ Spring里面用事务管理都是用这个接口
 
 
 七种事务传播行为     
-![img_11.png](img_11.png)
+![img_11.png](Spring_img/img_11.png)
 
 propagation:传播
 * PROPAGATION_REQUIRED(默认)，需要事务,当前存在事务则使用，不存在则创建
@@ -468,54 +468,54 @@ propagation:传播
 * PROPAGATION_NOT_SUPPORTED 不支持事务，始终以非事务方式执行
 * PROPAGATION_NEVER 不支持事务，存在则报错
 * PROPAGATION_NESTED 嵌套事务，如果当前事务存在，则在嵌套事务中执行，内层事务依赖外层事务，如果外层失败，则会回滚内层，内层失败不影响外层
-![img_43.png](img_43.png)    
+![img_43.png](Spring_img/img_43.png)    
 
 以REQUIRED举例讲解：   
-![img_44.png](img_44.png)    
+![img_44.png](Spring_img/img_44.png)    
 以REQUIRED_NEW举例   
-![img_45.png](img_45.png)    
+![img_45.png](Spring_img/img_45.png)    
 A和B位两个事务，将调用B方法的A作为外层事务，而将事务B作为内层事务，两层事务互不相干，也就是说A出现了错误会回滚，但B没错的话就不会回滚   
 参数使用代码示例如下：        
-![img_46.png](img_46.png)    
+![img_46.png](Spring_img/img_46.png)    
 
 
 ### spring有几个事务隔离级别
-![img_10.png](img_10.png)     
+![img_10.png](Spring_img/img_10.png)     
 DEFAULT是使用数据库定义的隔离级别，读未提交，读已提交，可重复读，序列化    
-![img_47.png](img_47.png)    
+![img_47.png](Spring_img/img_47.png)    
 
 如何设置呢？    
-![img_48.png](img_48.png)          
+![img_48.png](Spring_img/img_48.png)          
 重点掌握可重复读，MYSQL默认是repeatable_read
 
 #### @Transactional其他参数
-![img_49.png](img_49.png)   
+![img_49.png](Spring_img/img_49.png)   
 
-![img_50.png](img_50.png)   
+![img_50.png](Spring_img/img_50.png)   
 
-![img_51.png](img_51.png)      
+![img_51.png](Spring_img/img_51.png)      
 用法就是加上异常的.class         
-![img_52.png](img_52.png)       
+![img_52.png](Spring_img/img_52.png)       
 
 
 
 #### 完全注解实现事务   
 自定义配置类，然后用@Bean配置事务管理器  
-![img_53.png](img_53.png)   
+![img_53.png](Spring_img/img_53.png)   
 
 ### 面试题 
-1.![img_26.png](img_26.png)     
+1.![img_26.png](Spring_img/img_26.png)     
 
 2. Spring事务什么时候失效    <https://blog.csdn.net/weixin_43564627/article/details/121354260>
 * 从 MySQL 5.5.5 开始的默认存储引擎是：InnoDB，之前默认的都是：MyISAM，所以这点要值得注意，底层引擎不支持事务再怎么搞都是白搭    
 * 没有被 Spring 管理，比如所在的类没有加@Service注解等，这个类就不会被加载成一个 Bean，那这个类就不会被 Spring 管理了，事务自然就失效了
 * 方法不是public的，@Transactional注解只能用于public，如果要用在非 public 方法上，可以开启 AspectJ 代理模式
 * 自身调用问题   
-![img_31.png](img_31.png)    
+![img_31.png](Spring_img/img_31.png)    
 就算你两个方法上面都加了@Transactional注解一样是不行的，因为它们发生了自身调用，就调该类自己的方法，而没有经过 Spring 的代理类，默认只有在外部调用事务才会生效，这也是老生常谈的经典问题了    
 * 数据源没有配置事务管理器     
 拿我正在写的项目举例子，要配置事务管理器       
-![img_32.png](img_32.png)       
+![img_32.png](Spring_img/img_32.png)       
 * 事务隔离级别设置了不支持    
 
 * 在业务代码中如果抛出RuntimeException异常，事务回滚；但是抛出Exception，事务不回滚；
@@ -564,7 +564,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 常用的视图是Thymeleaf
 # SpringMVC父子容器知道是什么吗  
-![img_12.png](img_12.png)    
+![img_12.png](Spring_img/img_12.png)    
 那为什么会有父子之分？
 
 其实 Spring 容器在启动的时候，不会有 SpringMVC 这个概念，只会扫描文件然后创建一个 context ，此时就是父容器。
@@ -586,7 +586,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 
 #### @Autowired
 @Autowired表示一个属性是否需要进行依赖注入，可以使用在属性、普通方法上、构造方法上。注解中的required属性默认是true，如果没有对象可以注入到属性，则会报出异常；
-![img_35.png](img_35.png)    
+![img_35.png](Spring_img/img_35.png)    
 @Autowired加在某个属性上，spring会从ioc容器中找到bean对象注入到属性上，如果找到多个该类型的Bean对象，则再根据属性的名字从多个Bean对象中确认一个；
 
 @Autowired写在set()方法上，在spring会根据方法的参数类型从ioc容器中找到该类型的Bean对象注入到方法的行参中，并且自动反射调用该方法(被@Autowired修饰的方法一定会执行)，所以一般使用在set方法中、普通方法不用；
@@ -596,7 +596,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 @Autowired注解在进行依赖注入的时候需要指定bean的时候，和@Qualifier注解一起使用使用@qualifier注解指定名称
 
 #### @Resource
-![img_116.png](img_116.png)   
+![img_116.png](Spring_img/img_116.png)   
 
 
 #### @Qualifier和@Primary   
@@ -615,7 +615,7 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
 ##### @Qualify   
 
 像@Service  @Component注解，这些是可以取名字的，比如@Component("名字")  
-![img_23.png](img_23.png)    
+![img_23.png](Spring_img/img_23.png)    
 
 
 ##### @Primary
@@ -627,10 +627,10 @@ Spring MVC 是基于  Servlet API 构建的，可以说核心就是 DispatcherSe
    在spring 中使用注解，常使用@Autowired， 默认是根据类型Type来自动注入的。但有些特殊情况，对同一个接口，可能会有几种不同的实现类(需要注册多个相同类型的bean),而默认只会采取其中一种的情况下 @Primary 的作用就出来了   
 3. 与@Bean 
 会让这个bean有最高的优先级     
-![img_22.png](img_22.png)     
+![img_22.png](Spring_img/img_22.png)     
 4. 与@Component使用  
 有多个接口的实现类的时候，直接在类上使用      
-![img_21.png](img_21.png)      
+![img_21.png](Spring_img/img_21.png)      
 
 
 #### @Import   
@@ -665,7 +665,7 @@ public @interface Order {
 * 通过常量类的值我们可以推测参数值越小优先级越高；   
 
 用法示例      
-![img_25.png](img_25.png)    
+![img_25.png](Spring_img/img_25.png)    
 
 
 源码分析IOC容器是如何根据优先级值来先后执行程序的   
@@ -755,7 +755,7 @@ public @interface Order {
 AOP 会用到 @Order，如果一个方法被多个 @Around 增强，可以使用 @Order 指定增强执行顺序      
 
 #### @Async   
-![img_34.png](img_34.png)    
+![img_34.png](Spring_img/img_34.png)    
 
 使用方法见网址：       
 <https://baijiahao.baidu.com/s?id=1726732631392844398&wfr=spider&for=pc>
@@ -768,7 +768,7 @@ Spring容器启动初始化bean时，判断类中是否使用了@Async注解，�
 
 
 #### @Component,@Controller,@Service,@Repository
-![img_37.png](img_37.png)    
+![img_37.png](Spring_img/img_37.png)    
 
 
 
@@ -780,7 +780,7 @@ Spring容器启动初始化bean时，判断类中是否使用了@Async注解，�
 
 # ImportSelector    
 源码     
-![img_30.png](img_30.png)      
+![img_30.png](Spring_img/img_30.png)      
  
 其主要作用是收集需要导入的配置类，如果该接口的实现类同时实现EnvironmentAware， BeanFactoryAware ，BeanClassLoaderAware或者ResourceLoaderAware，那么在调用其selectImports方法之前先调用上述接口中对应的方法，如果需要在所有的@Configuration处理完在导入时可以实现DeferredImportSelector接口    
    
@@ -789,7 +789,7 @@ Spring容器启动初始化bean时，判断类中是否使用了@Async注解，�
 
 通常我们要定义一个类实现ImportSelector ，它的selectImports方法返回的是String[]，就是需要初始化的类的全类名数组    
 例子：open-capacity-platform项目中log-spring-boot-starter   
-![img_33.png](img_33.png)    
+![img_33.png](Spring_img/img_33.png)    
 
 
 
