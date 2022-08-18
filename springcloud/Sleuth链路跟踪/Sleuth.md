@@ -7,15 +7,15 @@
 常用来弄日志系统模块             
 
 
-![img_19.png](img_19.png)     
+![img_19.png](Sleuth_img/img_19.png)     
 
-![img_20.png](img_20.png)    
+![img_20.png](Sleuth_img/img_20.png)    
 
 Sleuth监控，zipkin展示控制台     
 
 zipkin 9411端口访问    
 下载jar包就行，然后java -jar   ******.jar    
-![img_23.png](img_23.png)    
+![img_23.png](Sleuth_img/img_23.png)    
 
 
 
@@ -23,9 +23,9 @@ zipkin 9411端口访问
 
 链路图   
 
-![img_21.png](img_21.png)       
+![img_21.png](Sleuth_img/img_21.png)       
  
-![img_22.png](img_22.png)
+![img_22.png](Sleuth_img/img_22.png)
 
 
 
@@ -33,14 +33,14 @@ zipkin 9411端口访问
 
 搭建   
 引入依赖   
-![img_24.png](img_24.png)    
+![img_24.png](Sleuth_img/img_24.png)    
 
 
 
 改yaml文件 
-![img_25.png](img_25.png)      
+![img_25.png](Sleuth_img/img_25.png)      
 
 
 用order调用payment
-![img_26.png](img_26.png)      
-![img_27.png](img_27.png)    
+![img_26.png](Sleuth_img/img_26.png)      
+![img_27.png](Sleuth_img/img_27.png)    

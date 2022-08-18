@@ -1,20 +1,20 @@
 # GateWay   
 ### 简介   
-![img_62.png](img_62.png)     
+![img_62.png](GateWay_img/img_62.png)     
 
 底层引入了Netty
-![img_63.png](img_63.png)      
+![img_63.png](GateWay_img/img_63.png)      
 
 
 
 ### 能做什么？   
 
 挡在前面   
-![img_64.png](img_64.png)    
+![img_64.png](GateWay_img/img_64.png)    
 
 负载均衡是nginx    
 然后下面是网关     
-![img_65.png](img_65.png)    
+![img_65.png](GateWay_img/img_65.png)    
 
 
 反向代理
@@ -26,28 +26,28 @@
 
 ### Gateway是非阻塞io，Zuul是阻塞的  
 
-![img_66.png](img_66.png)    
+![img_66.png](GateWay_img/img_66.png)    
 
-![img_67.png](img_67.png)       
+![img_67.png](GateWay_img/img_67.png)       
 
-![img_68.png](img_68.png)    
+![img_68.png](GateWay_img/img_68.png)    
 
 
-![img_69.png](img_69.png)      
+![img_69.png](GateWay_img/img_69.png)      
 
 
 
 
 
 ### 三大核心概念    ：Route路由，Predicate断言，Filter过滤    和RabbitMq很像   
-![img_71.png](img_71.png)    
-![img_72.png](img_72.png)   
+![img_71.png](GateWay_img/img_71.png)    
+![img_72.png](GateWay_img/img_72.png)   
 
 
 
 
 ###### GateWay流程   
-![img_73.png](img_73.png)   
+![img_73.png](GateWay_img/img_73.png)   
 
 
 * 客户端向 Spring Cloud Gateway 发出请求。然后在 Gateway Handler Mapping 中找到与请求相匹配的路由，将其发送到 Gateway Web Handler。
@@ -69,7 +69,7 @@
 ##### 网关类的application.yml配置文件
 ``` yaml
 server:
-  port: 9527
+  port: 9527    
 
 spring:
   application:
@@ -98,6 +98,8 @@ eureka:
       defaultZone: http://localhost:7001/eureka
 ```
 
+项目就用 Nacos 弄就好了，不要eureka   
+
 参数说明:
 ```yaml
   cloud:
@@ -108,7 +110,7 @@ eureka:
           predicates:
             - Path=/XXX/XXX        # 断言，路径相匹配的进行路由
 ```
-配置了uri后，当用户访问http://localhost:XXXX后，9527端口的网关会挡在他前面
+配置了uri后，当用户访问http://localhost:XXXX后，9527端口的网关会挡在他前面    
 没配置网关以前   
 ![img_6.png](img_6.png)  
 配置网关以后,能通过9527访问8001    
