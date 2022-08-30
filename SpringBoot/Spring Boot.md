@@ -16,7 +16,7 @@
 ![img_15.png](SpringBoot_Img/img_15.png)    
 只有一个属性value，表示判断的条件(一个或多个)   
 注解实现的原理很简单，就是通过org.springframework.context.annotation.Condition这个接口判断是否应该执行操作      
-
+ 
 ----
 
 好了既然说到了spring源码中的Condition，那就看看Condition吧    
@@ -347,7 +347,7 @@ ConditionalOnProperty当配置文件中配置了哪一个属性才生效
 
 如果我们引用的是其他包下的，那个类没有@Component    
 ![img_90.png](SpringBoot_Img/img_90.png)   
-那我们就用第二种方法：@EnableConfigurationPropertiessds   
+那我们就用第二种方法：@EnableConfigurationProperties
 
 这种方法只能在配置类上写  
 ![img_91.png](SpringBoot_Img/img_91.png)     
