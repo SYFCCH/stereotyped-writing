@@ -1,6 +1,5 @@
-
-
 * 在主 pom 中定义基础组件版本，使用dependencyManagement引入版本依赖。
+
 ```xml
 <properties>
 	<java.version>1.8</java.version>
@@ -44,7 +43,7 @@
 </dependencyManagement>
 ```
 
-在 Service 模块中引入具体依赖    
+在 Service 模块中引入具体依赖
 
 ```xml
 <dependencies>
@@ -91,12 +90,11 @@
 </dependencies>
 ```
 
-
-# 集成Nacos注册中心   
-
+# 集成Nacos注册中心
 
 * 引入spring-cloud-starter-alibaba-nacos-discovery，上一步骤已完成；
-* 修改配置文件application.yml，配置 nacos 的服务地址（注意修改服务端口）；  
+* 修改配置文件application.yml，配置 nacos 的服务地址（注意修改服务端口）；
+
 ```xml
 server:
   port:8010
@@ -110,6 +108,7 @@ spring:
 ```
 
 * 在项目启动类上添加@EnableDiscoveryClient注解
+
 ```java
 @SpringBootApplication
 @RestController
