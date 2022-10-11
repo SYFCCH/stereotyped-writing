@@ -1,2 +1,4 @@
-mybatis注解之@Mapper和@MapperScan的使用  
 
+![img.png](img.png)      
+
+实际开发中前三个，springboot的yml文件中指定就好   
